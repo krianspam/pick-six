@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: #f4f5ef; color: #101817; }
+button, input { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+::selection { background: #d9ff57; color: #101817; }
+.noise { position: relative; }
+.noise::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .035; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E"); }
+.score-input { appearance: textfield; }
+.score-input::-webkit-inner-spin-button { appearance: none; }
+.glass { background: rgba(255,255,255,.72); backdrop-filter: blur(18px); }
+.hide-scroll::-webkit-scrollbar { display: none; }
+@keyframes float { 0%,100% { transform: translateY(0) rotate(0) } 50% { transform: translateY(-10px) rotate(2deg) } }
+.float { animation: float 7s ease-in-out infinite; }
+.hide-scroll { -ms-overflow-style: none; scrollbar-width: none; } .hide-scroll::-webkit-scrollbar { display: none; }

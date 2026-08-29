@@ -1,0 +1,263 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MatchStatus {
+  UPCOMING
+  LIVE
+  FINISHED
+}
+
+enum Stage {
+  LEAGUE_PHASE
+  GROUP
+  ROUND_OF_32
+  ROUND_OF_16
+  QUARTER_FINAL
+  SEMI_FINAL
+  THIRD_PLACE
+  FINAL
+}
+
+enum AwardReason {
+  EXACT
+  GOAL_DIFFERENCE
+  CLOSEST
+  WALKOVER
+  TIE
+  NONE
+}
+
+model User {
+  id             String         @id @default(cuid())
+  name           String?
+  email          String         @unique
+  emailVerified  DateTime?
+  image          String?
+  passwordHash   String?
+  role           Role           @default(USER)
+  accounts       Account[]
+  sessions       Session[]
+  memberships    LeagueMember[]
+  predictions    Prediction[]
+  notifications  Notification[]
+  createdLeagues League[]       @relation("LeagueOwner")
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Tournament {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  year      Int
+  startsAt  DateTime
+  endsAt    DateTime
+  active    Boolean  @default(false)
+  teams     Team[]
+  matches   Match[]
+  groups    Group[]
+  leagues   League[]
+  createdAt DateTime @default(now())
+}
+
+model League {
+  id           String         @id @default(cuid())
+  name         String
+  code         String         @unique
+  ownerId      String
+  tournamentId String
+  isPrivate    Boolean        @default(true)
+  maxMembers   Int            @default(64)
+  owner        User           @relation("LeagueOwner", fields: [ownerId], references: [id])
+  tournament   Tournament     @relation(fields: [tournamentId], references: [id])
+  members      LeagueMember[]
+  predictions  Prediction[]
+  awards       MatchAward[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([code])
+}
+
+model LeagueMember {
+  id       String     @id @default(cuid())
+  leagueId String
+  userId   String
+  role     MemberRole @default(MEMBER)
+  joinedAt DateTime   @default(now())
+  league   League     @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([leagueId, userId])
+}
+
+model Team {
+  id           String     @id @default(cuid())
+  tournamentId String
+  name         String
+  code         String
+  flagUrl      String?
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  homeMatches  Match[]    @relation("HomeTeam")
+  awayMatches  Match[]    @relation("AwayTeam")
+  standings    Standing[]
+
+  @@unique([tournamentId, code])
+}
+
+model Group {
+  id           String     @id @default(cuid())
+  tournamentId String
+  name         String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  standings    Standing[]
+
+  @@unique([tournamentId, name])
+}
+
+model Standing {
+  id           String @id @default(cuid())
+  groupId      String
+  teamId       String
+  played       Int    @default(0)
+  won          Int    @default(0)
+  drawn        Int    @default(0)
+  lost         Int    @default(0)
+  goalsFor     Int    @default(0)
+  goalsAgainst Int    @default(0)
+  points       Int    @default(0)
+  group        Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  team         Team   @relation(fields: [teamId], references: [id])
+
+  @@unique([groupId, teamId])
+}
+
+model Match {
+  id               String       @id @default(cuid())
+  tournamentId     String
+  stage            Stage
+  groupName        String?
+  bracketSlot      String?
+  homeTeamId       String?
+  awayTeamId       String?
+  homePlaceholder  String?
+  awayPlaceholder  String?
+  kickoff          DateTime
+  venue            String
+  status           MatchStatus  @default(UPCOMING)
+  locked           Boolean      @default(false)
+  homeScore        Int?
+  awayScore        Int?
+  homePenaltyScore Int?
+  awayPenaltyScore Int?
+  tournament       Tournament   @relation(fields: [tournamentId], references: [id])
+  homeTeam         Team?        @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam         Team?        @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  predictions      Prediction[]
+  awards           MatchAward[]
+
+  @@index([tournamentId, kickoff])
+}
+
+model Prediction {
+  id               String   @id @default(cuid())
+  matchId          String
+  userId           String
+  leagueId         String
+  homeScore        Int
+  awayScore        Int
+  penaltyWinnerId  String?
+  submittedAt      DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  match            Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  league      League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+
+  @@unique([matchId, userId, leagueId])
+}
+
+model MatchAward {
+  id       String      @id @default(cuid())
+  leagueId String
+  matchId  String
+  userId   String?
+  points   Int
+  reason   AwardReason
+  league   League      @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  match    Match       @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@unique([leagueId, matchId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  title     String
+  body      String
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SyncLog {
+  id        String   @id @default(cuid())
+  triggered String   @default("cron") // "cron" | "manual"
+  matches   Int      @default(0)
+  created   Int      @default(0)
+  updated   Int      @default(0)
+  settled   Int      @default(0)
+  errors    Int      @default(0)
+  ranAt     DateTime @default(now())
+}

@@ -1,0 +1,3 @@
+export function Logo({ light = false }: { light?: boolean }) {
+  return <div className="flex items-center gap-2.5"><div className={`grid h-9 w-9 place-items-center rounded-xl ${light ? "bg-lime text-forest" : "bg-forest text-lime"}`}><svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="2.4"><path d="M4 15.5 8 8l4 3 4-6 4 10.5-8 4.5Z" strokeLinejoin="round"/><path d="m8 8 4 12m4-15-4 15m-8-4.5h16"/></svg></div><span className={`font-display text-xl font-bold tracking-[-.04em] ${light ? "text-white" : "text-forest"}`}>picksix<span className="text-coral">.</span></span></div>
+}

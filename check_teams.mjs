@@ -1,0 +1,10 @@
+import { PrismaClient } from '@prisma/client';
+const p = new PrismaClient();
+const t = await p.tournament.findFirst({ where: { slug: 'champions-league-2026' } });
+console.log('Tournament:', t?.name, '| Active:', t?.active);
+const teams = await p.team.findMany({ where: { tournamentId: t?.id ?? '' } });
+console.log('Current teams in DB:', teams.length);
+if (teams.length) console.log('Codes:', teams.map(x=>x.code).join(', '));
+const matches = await p.match.count({ where: { tournamentId: t?.id ?? '' } });
+console.log('Current matches:', matches);
+await p.$disconnect();
