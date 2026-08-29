@@ -33,7 +33,14 @@ export async function GET(request: Request) {
       },
     });
 
-    return NextResponse.json(matches);
+    // Remap team flag URLs to `flag` for frontend compatibility
+    const remapped = matches.map((m: any) => ({
+      ...m,
+      homeTeam: m.homeTeam ? { ...m.homeTeam, flag: m.homeTeam.flagUrl || m.homeTeam.flag || "" } : null,
+      awayTeam: m.awayTeam ? { ...m.awayTeam, flag: m.awayTeam.flagUrl || m.awayTeam.flag || "" } : null,
+    }));
+
+    return NextResponse.json(remapped);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

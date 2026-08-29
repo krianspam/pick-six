@@ -244,8 +244,8 @@ export function TournamentView({ matches = [] }: { matches?: any[] }) {
           byMatchday[md].map((m: any) => (
             <div key={m.id} className="flex items-center gap-4 rounded-2xl border border-ink/10 bg-white p-4 shadow-sm">
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                {m.homeTeam?.flagUrl?.startsWith('http')
-                  ? <img src={m.homeTeam.flagUrl} alt={m.homeTeam.name} className="h-8 w-8 object-contain flex-shrink-0" />
+                {m.homeTeam?.flag?.startsWith?.('http')
+                  ? <img src={m.homeTeam.flag} alt={m.homeTeam.name} className="h-8 w-8 object-contain flex-shrink-0" />
                   : <span className="text-2xl flex-shrink-0">{m.homeTeam?.flag ?? '?'}</span>
                 }
                 <span className="text-sm font-extrabold truncate">{m.homeTeam?.name}</span>
@@ -257,8 +257,8 @@ export function TournamentView({ matches = [] }: { matches?: any[] }) {
               </div>
               <div className="flex items-center gap-3 flex-1 min-w-0 justify-end">
                 <span className="text-sm font-extrabold truncate text-right">{m.awayTeam?.name}</span>
-                {m.awayTeam?.flagUrl?.startsWith('http')
-                  ? <img src={m.awayTeam.flagUrl} alt={m.awayTeam.name} className="h-8 w-8 object-contain flex-shrink-0" />
+                {m.awayTeam?.flag?.startsWith?.('http')
+                  ? <img src={m.awayTeam.flag} alt={m.awayTeam.name} className="h-8 w-8 object-contain flex-shrink-0" />
                   : <span className="text-2xl flex-shrink-0">{m.awayTeam?.flag ?? '?'}</span>
                 }
               </div>
