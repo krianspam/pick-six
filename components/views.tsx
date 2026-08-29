@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Trophy, Target, CalendarDays, Users, Lock, ChevronRight, X, Settings, Shield } from "lucide-react";
 import type { League, Match, Prediction } from "@/lib/types";
 import { formatTimeUntil, getPredictionWindow } from "@/lib/prediction-window";
@@ -199,7 +200,17 @@ export function TeamsView({ teams = [], tournamentName = "" }: { teams?: any[]; 
 }
 
 export function TournamentView({ matches = [] }: { matches?: any[] }) {
-  if (!matches.length) {
+  const [fixtureMatches, setFixtureMatches] = useState<any[]>([]);
+  useEffect(() => {
+    if (!matches.length) {
+      fetch("/api/matches?tournamentId=cmsm4d7pj00012r3qqtqi6mxn")
+        .then(r => r.ok ? r.json() : [])
+        .then(d => setFixtureMatches(Array.isArray(d) ? d : []))
+        .catch(() => setFixtureMatches([]));
+    }
+  }, [matches.length]);
+  const display = matches.length ? matches : fixtureMatches;
+  if (!display.length) {
     return (
       <div className="flex flex-col items-center justify-center rounded-3xl border border-ink/10 bg-white p-12 text-center shadow-sm">
         <Trophy size={48} className="mb-4 text-ink/20" />
@@ -213,8 +224,50 @@ export function TournamentView({ matches = [] }: { matches?: any[] }) {
       </div>
     );
   }
-  // TODO: render bracket / fixtures grid once matches exist
-  return <TeamsView teams={[]} />;
+
+  // Group by matchday
+  const byMatchday: Record<string, any[]> = {};
+  for (const m of display) {
+    const md = m.matchday ?? "Unscheduled";
+    (byMatchday[md] ??= []).push(m);
+  }
+  const matchdays = Object.keys(byMatchday).sort((a, b) => +a - +b);
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="font-display text-3xl font-bold">Matchday 1</h2>
+        <p className="mt-1 text-xs font-extrabold uppercase tracking-widest text-ink/40">September 17 – 19, 2026</p>
+      </div>
+      <div className="space-y-4">
+        {matchdays.flatMap(md =>
+          byMatchday[md].map((m: any) => (
+            <div key={m.id} className="flex items-center gap-4 rounded-2xl border border-ink/10 bg-white p-4 shadow-sm">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                {m.homeTeam?.flagUrl?.startsWith('http')
+                  ? <img src={m.homeTeam.flagUrl} alt={m.homeTeam.name} className="h-8 w-8 object-contain flex-shrink-0" />
+                  : <span className="text-2xl flex-shrink-0">{m.homeTeam?.flag ?? '?'}</span>
+                }
+                <span className="text-sm font-extrabold truncate">{m.homeTeam?.name}</span>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <span className="font-display text-lg font-bold text-ink/30">
+                  {m.status === "FINISHED" ? `${m.homeScore ?? 0} – ${m.awayScore ?? 0}` : "vs"}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 flex-1 min-w-0 justify-end">
+                <span className="text-sm font-extrabold truncate text-right">{m.awayTeam?.name}</span>
+                {m.awayTeam?.flagUrl?.startsWith('http')
+                  ? <img src={m.awayTeam.flagUrl} alt={m.awayTeam.name} className="h-8 w-8 object-contain flex-shrink-0" />
+                  : <span className="text-2xl flex-shrink-0">{m.awayTeam?.flag ?? '?'}</span>
+                }
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
 }
 
 
