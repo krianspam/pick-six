@@ -496,11 +496,11 @@ export default function Dashboard({ session }: { session?: any }) {
                 {finished.map((m,i) => (
                   <div key={m.id} className="flex items-center rounded-2xl border border-ink/10 bg-white p-4">
                     <span className="mr-3 rounded-lg bg-cream px-2 py-1 text-[9px] font-extrabold text-ink/40">{m.group?.replace("Group ", "GRP ")}</span>
-                    {m.home.flag?.startsWith?.('http') ? <img src={m.home.flag} alt={m.home.name} className="h-8 w-8 object-contain" /> : <span className="text-xl">{m.home.flag}</span>}
+                    {m.home.flag?.includes?.('://') ? <img src={m.home.flag} alt={m.home.name} className="h-8 w-8 object-contain" /> : <span className="text-xl">{m.home.flag || "🏳️"}</span>}
                     <span className="ml-2 flex-1 text-xs font-extrabold">{m.home.name}</span>
                     <b className="font-display text-lg">{m.homeScore} — {m.awayScore}</b>
                     <span className="mr-2 flex-1 text-right text-xs font-extrabold">{m.away.name}</span>
-                    {m.away.flag?.startsWith?.('http') ? <img src={m.away.flag} alt={m.away.name} className="h-8 w-8 object-contain" /> : <span className="text-xl">{m.away.flag}</span>}
+                    {m.away.flag?.includes?.('://') ? <img src={m.away.flag} alt={m.away.name} className="h-8 w-8 object-contain" /> : <span className="text-xl">{m.away.flag || "🏳️"}</span>}
                     {i === 0 && <span className="ml-3 rounded-full bg-lime px-2 py-1 text-[9px] font-extrabold">+3 exact</span>}
                   </div>
                 ))}

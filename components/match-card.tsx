@@ -90,12 +90,12 @@ export function MatchCard({ match, saved, onSave, members = [] }: { match: Match
   </article>;
 }
 function Team({ flag, name, right }: { flag: string; name: string; right?: boolean }) {
-  const isUrl = flag.startsWith('http');
+  const isUrl = typeof flag === "string" && flag.includes("://");
   return (
     <div className={`min-w-0 ${right ? "text-right" : ""}`}>
       {isUrl
         ? <img src={flag} alt={name} className="h-12 w-12 object-contain mx-auto" />
-        : <span className="text-4xl drop-shadow-sm">{flag}</span>
+        : <span className="text-4xl drop-shadow-sm">{flag || "🏳️"}</span>
       }
       <p className="mt-2 truncate text-xs font-extrabold">{name}</p>
     </div>
