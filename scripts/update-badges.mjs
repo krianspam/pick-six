@@ -9,7 +9,7 @@ const TOURNAMENT_ID = 'cmsm4d7pj00012r3qqtqi6mxn';
 // Badge URLs — Wikimedia Commons / Wikipedia uploads (120px thumbnails)
 // Sorted by code for easy lookup
 const BADGES = {
-  AEK:   'https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/AEK_BC_%28logo_2019%29.svg/120px-AEK_BC_%28logo_2019%29.svg.png',
+  AEK:   'https://upload.wikimedia.org/wikipedia/en/thumb/0/04/AEK_Athens_FC_logo.svg/120px-AEK_Athens_FC_logo.svg.png',
   ARS:   'https://upload.wikimedia.org/wikipedia/en/thumb/5/53/Arsenal_FC.svg/120px-Arsenal_FC.svg.png',
   AVL:   'https://upload.wikimedia.org/wikipedia/en/thumb/f/f9/Aston_Villa_F.C._logo_%282016%29.svg/120px-Aston_Villa_F.C._logo_%282016%29.svg.png',
   ATL:   'https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Atletico_Madrid_Logo_2024.svg/120px-Atletico_Madrid_Logo_2024.svg.png',
@@ -24,7 +24,7 @@ const BADGES = {
   FPI:   'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Feyenoord_logo.svg/120px-Feyenoord_logo.svg.png',
   GAL:   'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Galatasaray_Sports_Club_logo.svg/120px-Galatasaray_Sports_Club_logo.svg.png',
   INT:   'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/FC_Internazionale_Milano_2021.svg/120px-FC_Internazionale_Milano_2021.svg.png',
-  LASK:  'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/LASK_Logo.svg/120px-LASK_Logo.svg.png',
+  LASK:  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/LASK-Logo_2023.svg/120px-LASK-Logo_2023.svg.png',
   LEN:   'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/RC_Lens_logo.svg/120px-RC_Lens_logo.svg.png',
   LIL:   'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/LOSC_Lille_logo_2018.svg/120px-LOSC_Lille_logo_2018.svg.png',
   LIV:   'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Liverpool_FC.svg/120px-Liverpool_FC.svg.png',
@@ -35,7 +35,7 @@ const BADGES = {
   POR:   'https://upload.wikimedia.org/wikipedia/en/thumb/f/f1/FC_Porto.svg/120px-FC_Porto.svg.png',
   PSV:   'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/PSV_Eindhoven_logo.svg/120px-PSV_Eindhoven_logo.svg.png',
   RBL:   'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/RB_Leipzig_2014_logo.svg/120px-RB_Leipzig_2014_logo.svg.png',
-  RMA:   'https://upload.wikimedia.org/wikipedia/en/thumb/c/c7/Real_Madrid_CF.svg/120px-Real_Madrid_CF.svg.png',
+  RMA:   'https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/120px-Real_Madrid_CF.svg.png',
   ROM:   'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/AS_Roma_Logo_2017.svg/120px-AS_Roma_Logo_2017.svg.png',
   SAB:   'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Sabah_FK_2022.svg/120px-Sabah_FK_2022.svg.png',
   SHK:   'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/FC_Shakhtar_Donetsk_Logo.svg/120px-FC_Shakhtar_Donetsk_Logo.svg.png',

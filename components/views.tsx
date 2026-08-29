@@ -34,9 +34,9 @@ export function PredictionsView({ league, dbMatches, currentUserId }: { league: 
               <div className="bg-cream p-4 border-b border-ink/10 flex items-center justify-between sm:px-6">
                 <div className="flex items-center gap-4 w-full">
                   <div className="flex flex-col items-center flex-1 sm:flex-none">
-                    {match.home.flag.startsWith('http')
+                    {typeof match.home.flag === 'string' && match.home.flag.includes('://')
                       ? <img src={match.home.flag} alt={match.home.name} className="h-10 w-10 object-contain mx-auto" />
-                      : <span className="text-2xl">{match.home.flag}</span>
+                      : <span className="text-2xl">{match.home.flag || '🏳️'}</span>
                     }
                     <span className="text-[10px] font-extrabold uppercase mt-1">{match.home.code}</span>
                   </div>
@@ -45,9 +45,9 @@ export function PredictionsView({ league, dbMatches, currentUserId }: { league: 
                     <div className="text-[9px] font-extrabold tracking-widest text-ink/40 uppercase mt-1">Final Score</div>
                   </div>
                   <div className="flex flex-col items-center flex-1 sm:flex-none">
-                    {match.away.flag.startsWith('http')
+                    {typeof match.away.flag === 'string' && match.away.flag.includes('://')
                       ? <img src={match.away.flag} alt={match.away.name} className="h-10 w-10 object-contain mx-auto" />
-                      : <span className="text-2xl">{match.away.flag}</span>
+                      : <span className="text-2xl">{match.away.flag || '🏳️'}</span>
                     }
                     <span className="text-[10px] font-extrabold uppercase mt-1">{match.away.code}</span>
                   </div>
