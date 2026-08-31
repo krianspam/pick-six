@@ -19,6 +19,9 @@ export async function GET() {
         image: true,
         role: true,
         createdAt: true,
+        favoriteTeamId: true,
+        phase: true,
+        switchedAt: true,
       },
     });
 
@@ -49,6 +52,11 @@ export async function PATCH(request: Request) {
       updateData.passwordHash = await bcrypt.hash(data.password, 10);
     }
 
+    // Favorite team selection (only set when explicitly provided)
+    if (data.favoriteTeamId !== undefined) updateData.favoriteTeamId = data.favoriteTeamId || null;
+    if (data.phase !== undefined) updateData.phase = data.phase || null;
+    if (data.switchedAt !== undefined) updateData.switchedAt = data.switchedAt ? new Date(data.switchedAt) : null;
+
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: updateData,
@@ -59,6 +67,9 @@ export async function PATCH(request: Request) {
         image: true,
         role: true,
         createdAt: true,
+        favoriteTeamId: true,
+        phase: true,
+        switchedAt: true,
       },
     });
 

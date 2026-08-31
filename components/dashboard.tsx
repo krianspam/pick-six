@@ -11,6 +11,7 @@ import type { League, Prediction } from "@/lib/types";
 import { getPredictionWindow } from "@/lib/prediction-window";
 import { signOut, useSession } from "next-auth/react";
 import { PredictionsView, LeaderboardView, TournamentView, SettingsView, TeamsView } from "./views";
+import { PickNextTeamModal } from "./pick-next-team";
 import { useClickOutside } from "@/lib/hooks";
 import { formatRelative } from "@/lib/time";
 
@@ -36,11 +37,31 @@ export default function Dashboard({ session }: { session?: any }) {
   const [loading, setLoading] = useState(true);
   const [leaguePredictions, setLeaguePredictions] = useState<Record<string, Prediction>>({});
 
+  // Favorite team state
+  const [favoriteTeam, setFavoriteTeam] = useState<any>(null);
+  const [showPickNextTeam, setShowPickNextTeam] = useState(false);
+
   const user = session?.user;
 
   const loadData = async () => {
     if (!user) return;
     try {
+      // Load user's favorite team
+      const meRes = await fetch("/api/users/me");
+      if (meRes.ok) {
+        const meData = await meRes.json();
+        if (meData.favoriteTeamId) {
+          const teamRes = await fetch(`/api/teams`);
+          if (teamRes.ok) {
+            const teamData = await teamRes.json();
+            const found = teamData.teams?.find((t: any) => t.id === meData.favoriteTeamId);
+            if (found) setFavoriteTeam(found);
+          }
+        } else {
+          setFavoriteTeam(null);
+        }
+      }
+
       const leaguesRes = await fetch(`/api/leagues?t=${Date.now()}`);
       if (leaguesRes.ok) {
         const leagues = await leaguesRes.json();
@@ -343,6 +364,22 @@ export default function Dashboard({ session }: { session?: any }) {
             <button type="button" onClick={() => setShowLeagueSwitcher(!showLeagueSwitcher)} className="mt-1 flex items-center gap-2 font-display text-base font-bold">
               {displayLeague?.name || "No league selected"}<ChevronDown size={14} className={showLeagueSwitcher ? "rotate-180 transition-transform" : "transition-transform"}/>
             </button>
+          </div>
+          {/* My team badge — always visible */}
+          <div className="flex items-center gap-2">
+            {favoriteTeam ? (
+              <button onClick={() => setShowPickNextTeam(true)} className="flex items-center gap-2 rounded-full bg-forest px-3 py-1.5 text-xs font-extrabold text-white transition hover:bg-forest/90 shadow-sm">
+                {favoriteTeam.flagUrl ? <img src={favoriteTeam.flagUrl} alt={favoriteTeam.name} className="h-5 w-5 object-contain rounded-full bg-white/10" /> : <ShieldCheck size={13} className="opacity-80" />}
+                <span className="hidden sm:inline">{favoriteTeam.name}</span>
+                <span className="sm:hidden">{favoriteTeam.code}</span>
+              </button>
+            ) : (
+              <button onClick={() => setShowPickNextTeam(true)} className="flex items-center gap-2 rounded-full bg-ink/[0.08] px-3 py-1.5 text-xs font-extrabold text-ink/60 transition hover:bg-ink/15 hover:text-ink">
+                <ShieldCheck size={13} />
+                <span>Pick team</span>
+              </button>
+            )}
+          </div>
             {showLeagueSwitcher && (
               <div className="absolute left-0 top-full mt-3 w-64 rounded-[24px] border border-ink/10 bg-white p-2 shadow-2xl z-50 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="mb-2 px-2 pt-1 text-[10px] font-extrabold uppercase tracking-wider text-ink/40">Switch league</div>
@@ -456,6 +493,23 @@ export default function Dashboard({ session }: { session?: any }) {
                   <div className="mb-4 flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[.18em] text-lime">
                     <span className="h-2 w-2 rounded-full bg-lime"/> {openMatches.length ? `${openMatches.length} prediction ${openMatches.length === 1 ? "window" : "windows"} open` : "Picks open 24h before kickoff"}
                   </div>
+                  {/* My team card inside hero */}
+                  <div className="mt-2 flex items-center gap-3 rounded-xl bg-white/10 p-3 ring-1 ring-white/10">
+                    {favoriteTeam ? (
+                      <>
+                        {favoriteTeam.flagUrl ? <img src={favoriteTeam.flagUrl} alt={favoriteTeam.name} className="h-8 w-8 object-contain rounded-full bg-white/15" /> : <span className="h-8 w-8 flex items-center justify-center rounded-full bg-white/15 text-sm">⚽</span>}
+                        <div>
+                          <p className="text-xs font-extrabold">My team</p>
+                          <p className="text-sm font-display font-bold">{favoriteTeam.name} <span className="text-white/40 text-xs font-bold">{favoriteTeam.code}</span></p>
+                        </div>
+                        <span className="ml-auto rounded-full bg-lime/20 px-2 py-0.5 text-[9px] font-extrabold text-lime">{favoriteTeam.phase || "League"}</span>
+                      </>
+                    ) : (
+                      <button onClick={() => setShowPickNextTeam(true)} className="flex items-center gap-2 text-xs font-extrabold text-white/70 hover:text-white transition">
+                        <ShieldCheck size={14} /> Pick your team
+                      </button>
+                    )}
+                  </div>
                   <h1 className="max-w-2xl font-display text-4xl font-bold leading-[.98] tracking-[-.055em] sm:text-5xl">Call the score.<br/><span className="text-white/45">Claim the bragging rights.</span></h1>
                   <p className="mt-4 max-w-xl text-sm leading-6 text-white/55">Every prediction window opens exactly 24 hours before the match and locks automatically at kickoff.</p>
                 </div>
@@ -545,6 +599,30 @@ export default function Dashboard({ session }: { session?: any }) {
       </div>
     </main>
     <CreateLeagueModal open={modal} onClose={() => setModal(false)} onCreated={created}/>
+
+    {/* Pick next team modal — triggered by elimination */}
+    <PickNextTeamModal
+      open={showPickNextTeam}
+      teams={teams.length ? teams : []}
+      currentTeamName={favoriteTeam?.name}
+      round={"next round"}
+      onPick={async (teamId: string) => {
+        const picked = teams.find((t: any) => t.id === teamId);
+        if (!picked) return;
+        setFavoriteTeam({ ...picked, phase: "knockout" });
+        try {
+          await fetch("/api/users/me", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ favoriteTeamId: teamId, phase: "knockout", switchedAt: new Date().toISOString() }),
+          });
+        } catch (e) { console.error(e); }
+        setShowPickNextTeam(false);
+        setToast("Team updated — activates next round");
+        setTimeout(() => setToast(""), 2000);
+      }}
+      onDismiss={() => setShowPickNextTeam(false)}
+    />
     <AnimatePresence>
       {toast && <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} className="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-ink px-5 py-3 text-xs font-extrabold text-white shadow-xl">{toast}</motion.div>}
     </AnimatePresence>

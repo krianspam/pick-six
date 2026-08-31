@@ -46,21 +46,25 @@ enum AwardReason {
 }
 
 model User {
-  id             String         @id @default(cuid())
-  name           String?
-  email          String         @unique
-  emailVerified  DateTime?
-  image          String?
-  passwordHash   String?
-  role           Role           @default(USER)
-  accounts       Account[]
-  sessions       Session[]
-  memberships    LeagueMember[]
-  predictions    Prediction[]
-  notifications  Notification[]
-  createdLeagues League[]       @relation("LeagueOwner")
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id                String         @id @default(cuid())
+  name              String?
+  email             String         @unique
+  emailVerified     DateTime?
+  image             String?
+  passwordHash      String?
+  role              Role           @default(USER)
+  favoriteTeamId    String?
+  favoriteTeam      Team?          @relation("FavoriteTeam", fields: [favoriteTeamId], references: [id])
+  phase             String?        // "league" | "knockout"
+  switchedAt        DateTime?
+  accounts          Account[]
+  sessions          Session[]
+  memberships       LeagueMember[]
+  predictions       Prediction[]
+  notifications     Notification[]
+  createdLeagues    League[]       @relation("LeagueOwner")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 }
 
 model Account {
@@ -153,6 +157,7 @@ model Team {
   homeMatches  Match[]    @relation("HomeTeam")
   awayMatches  Match[]    @relation("AwayTeam")
   standings    Standing[]
+  favoritedBy  User[]     @relation("FavoriteTeam")
 
   @@unique([tournamentId, code])
 }
