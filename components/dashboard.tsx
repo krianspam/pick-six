@@ -528,7 +528,10 @@ export default function Dashboard({ session }: { session?: any }) {
             <section className="mt-9">
               <SectionTitle eyebrow="Up next" title="Make your picks" action="View all matches" onAction={() => setView("predictions")}/>
               <div className="hide-scroll -mx-4 mt-5 flex snap-x gap-4 overflow-x-auto px-4 pb-5 sm:-mx-7 sm:px-7 lg:mx-0 lg:px-0">
-                {upcoming.map(m => <MatchCard key={m.id} match={m} saved={predictions[m.id]} onSave={save} members={displayLeague.members} />)}
+                {upcoming.map(m => {
+                  const isMyTeam = !!favoriteTeam && (m.home?.id === favoriteTeam.id || m.away?.id === favoriteTeam.id || m.homeTeamId === favoriteTeam.id || m.awayTeamId === favoriteTeam.id);
+                  return <MatchCard key={m.id} match={m} saved={predictions[m.id]} onSave={save} members={displayLeague.members} isMyTeam={isMyTeam} />;
+                })}
               </div>
             </section>
             
