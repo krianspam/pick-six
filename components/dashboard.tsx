@@ -401,7 +401,6 @@ export default function Dashboard({ session }: { session?: any }) {
               </div>
             )}
           </div>
-        </div>
         <div className="flex items-center gap-3 relative">
           {/* Last-sync indicator — honest about staleness */}
           {lastSyncInfo && (
