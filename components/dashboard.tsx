@@ -564,7 +564,23 @@ export default function Dashboard({ session }: { session?: any }) {
             </section>
 
             <section className="mt-10">
-              <SectionTitle eyebrow="The fine print" title="How scoring works" action=""/>
+              <SectionTitle eyebrow="The fine print" title="How to play" action=""/>
+              <div className="mt-5 mb-4 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-ink/8 bg-white p-5">
+                   <div className="flex items-center gap-3 mb-2">
+                     <span className="grid h-8 w-8 place-items-center rounded-full bg-forest text-white font-extrabold text-sm">1</span>
+                     <p className="font-extrabold text-sm">Pick one team</p>
+                   </div>
+                   <p className="text-xs leading-5 text-ink/55 font-semibold">You choose exactly one team to follow at a time. You can only predict matches that involve your chosen team.</p>
+                </div>
+                <div className="rounded-2xl border border-ink/8 bg-white p-5">
+                   <div className="flex items-center gap-3 mb-2">
+                     <span className="grid h-8 w-8 place-items-center rounded-full bg-forest text-white font-extrabold text-sm">2</span>
+                     <p className="font-extrabold text-sm">Survive & switch</p>
+                   </div>
+                   <p className="text-xs leading-5 text-ink/55 font-semibold">If your team gets eliminated from the tournament, you'll be asked to pick a new team to follow into the next round.</p>
+                </div>
+              </div>
               <div className="mt-5 grid gap-3 sm:grid-cols-3">
                 <RuleCard
                   points={3}
