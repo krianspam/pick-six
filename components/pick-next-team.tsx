@@ -15,11 +15,12 @@ interface PickNextTeamModalProps {
   teams: Team[];
   currentTeamName?: string;
   round: string;
+  isEliminated?: boolean;
   onPick: (teamId: string) => void;
   onDismiss: () => void;
 }
 
-export function PickNextTeamModal({ open, teams, currentTeamName, round, onPick, onDismiss }: PickNextTeamModalProps) {
+export function PickNextTeamModal({ open, teams, currentTeamName, round, isEliminated = false, onPick, onDismiss }: PickNextTeamModalProps) {
   const [selected, setSelected] = useState<string | null>(null);
 
   if (!open) return null;
@@ -48,12 +49,14 @@ export function PickNextTeamModal({ open, teams, currentTeamName, round, onPick,
           {/* Header */}
           <div className="flex items-start justify-between mb-5">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-coral mb-1">Team eliminated</p>
+              <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-coral mb-1">
+                {isEliminated ? "Team eliminated" : "Change Team"}
+              </p>
               <h2 className="font-display text-2xl font-bold leading-tight">
-                Pick your next team
+                {isEliminated ? "Pick your next team" : "Pick your team"}
               </h2>
               <p className="mt-1 text-sm text-ink/60">
-                {currentTeamName
+                {isEliminated && currentTeamName
                   ? `${currentTeamName} is out. Choose who to follow into ${round}.`
                   : `Choose a team to follow into ${round}.`}
               </p>
